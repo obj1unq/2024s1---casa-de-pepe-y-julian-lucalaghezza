@@ -1,0 +1,67 @@
+import casa.*
+
+describe "Tests de Casa" {
+
+	test "Se rompe algo de 1000 pesos" {
+		casaDePepeYJulian.aumentarReparaciones(1000)
+		assert.notThat(casaDePepeYJulian.estaEnOrden())
+	}
+	
+	
+	test "Casa Integracion estrategias de ahorro"{
+		casaDePepeYJulian.viveres(50)
+		casaDePepeYJulian.aumentarReparaciones(100)
+		
+		cuentaCorriente.depositar(1000)
+		casaDePepeYJulian.cuenta(cuentaCorriente)
+		casaDePepeYJulian.estrategia(full)
+		
+		casaDePepeYJulian.mantenimiento()
+		
+		assert.notThat(casaDePepeYJulian.estaEnOrden())
+		assert.equals(90, casaDePepeYJulian.viveres())
+		assert.equals(800, casaDePepeYJulian.saldo())
+		assert.equals(800, cuentaCorriente.saldo())
+		assert.equals(100, casaDePepeYJulian.reparaciones())
+		assert.that(casaDePepeYJulian.requiereReparaciones())
+		
+	}
+
+}
+
+describe "Test de cuentas bancarias" {
+	
+	test "Cuenta gasto vacía con 20 pesos de costo, si se deposita 1000 pesos: el saldo es 980"{
+		cuentaConGastos.costoPorOperacion(20)
+		cuentaConGastos.depositar(1000)
+		
+		assert.equals(980, cuentaConGastos.saldo())
+	}
+	
+	test "Integral: cuenta combinada, primaria con gastos (50 de gastos), secundaria corriente(500 de saldo)"{
+		cuentaConGastos.costoPorOperacion(50)
+		cuentaCorriente.depositar(500)
+		cuentaCombinada.cuentaPrimaria(cuentaConGastos)
+		cuentaCombinada.cuentaSecundaria(cuentaCorriente)
+		
+		assert.equals(500, cuentaCombinada.saldo())
+		assert.equals(0, cuentaConGastos.saldo())
+		assert.equals(500, cuentaCorriente.saldo())
+		assert.equals(50, cuentaConGastos.costoPorOperacion())
+		
+		cuentaCombinada.depositar(100)
+		assert.equals(50,cuentaConGastos.saldo())
+		assert.equals(500, cuentaCorriente.saldo())
+		assert.equals(0, cuentaConGastos.costoPorOperacion())
+		assert.equals(550, cuentaCombinada.saldo())
+		
+		
+		cuentaCombinada.extraer(200)
+		assert.equals(50,cuentaConGastos.saldo())
+		assert.equals(300, cuentaCorriente.saldo())
+		assert.equals(0, cuentaConGastos.costoPorOperacion())
+		assert.equals(350, cuentaCombinada.saldo())	
+		
+	}
+}
+
